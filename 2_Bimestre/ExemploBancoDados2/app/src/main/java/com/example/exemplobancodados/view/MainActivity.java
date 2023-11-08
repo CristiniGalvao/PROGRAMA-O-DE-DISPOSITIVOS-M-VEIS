@@ -20,5 +20,6 @@ public class MainActivity extends AppCompatActivity {
         aluno.setNome("JUCA");
         AlunoDao.getInstancia(this).insert(aluno);
 
+
     }
 }

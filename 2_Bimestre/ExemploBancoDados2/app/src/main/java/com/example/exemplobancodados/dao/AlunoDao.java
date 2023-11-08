@@ -13,7 +13,7 @@ import com.example.exemplobancodados.model.Aluno;
 
 import java.util.ArrayList;
 
-public class AlunoDao implements GenericDao<Aluno> {
+public class AlunoDao implements GenericDao<Aluno>{
 
     //Variavel para abrir a conexão com BD
     private SQLiteOpenHelper openHelper;
@@ -25,16 +25,16 @@ public class AlunoDao implements GenericDao<Aluno> {
     private String nomeTabela = "ALUNO";
 
     //Nome das colunas da tabela
-    private String[] colunas = {"RA", "NOME"};
+    private String[]colunas = {"RA", "NOME"};
 
     private Context context;
 
     private static AlunoDao instancia;
 
-    public static AlunoDao getInstancia(Context context) {
-        if (instancia == null) {
+    public static AlunoDao getInstancia(Context context){
+        if(instancia == null){
             return instancia = new AlunoDao(context);
-        } else {
+        }else{
             return instancia;
         }
     }
@@ -43,7 +43,7 @@ public class AlunoDao implements GenericDao<Aluno> {
         this.context = context;
 
         //Abrir uma conexão da BD
-        openHelper = new SQLiteDataHelper(this.context, "UNIPAR_CVEL",
+        openHelper = new SQLiteDataHelper(this.context, "UNIPAR_BD",
                 null, 1);
         //Carrega a BD e da permissão para escrever na tabela
         bd = openHelper.getWritableDatabase();
@@ -51,82 +51,98 @@ public class AlunoDao implements GenericDao<Aluno> {
 
     @Override
     public long insert(Aluno obj) {
-        try {
+        try{
             ContentValues valores = new ContentValues();
-            valores.put(colunas[0], obj.getRa());//RA
-            valores.put(colunas[1], obj.getNome());//nome
+            valores.put(colunas[0], obj.getRa());
+            valores.put(colunas[1], obj.getNome());
 
             return bd.insert(nomeTabela, null, valores);
 
-        } catch (SQLException ex) {
-            Log.e("ERRO", "AlunoDao.insert(): " + ex.getMessage());
+        }catch (SQLException ex){
+            Log.e("ERRO", "AlunoDao.insert(): "+ex.getMessage());
         }
         return 0;
     }
 
     @Override
     public long update(Aluno obj) {
-        try {
+        try{
             ContentValues valores = new ContentValues();
             valores.put(colunas[1], obj.getNome());
 
-            String[] identificador = {String.valueOf(obj.getRa())};
-            return bd.update(nomeTabela, valores, colunas[0] + "= ?", identificador);
+            String[]identificador = {String.valueOf(obj.getRa())};
+            return bd.update(nomeTabela, valores,
+                    colunas[0]+" = ?", identificador);
 
-        } catch (SQLException ex) {
-            Log.e("ERRO", "AlunoDao.update(): " + ex.getMessage());
+
+        }catch (SQLException ex){
+            Log.e("ERRO", "AlunoDao.update(): "+ex.getMessage());
         }
         return 0;
     }
-
 
     @Override
     public long delete(Aluno obj) {
+        try{
 
-     try {
-         String []identificador={String.valueOf(obj.getRa())};
-         return bd.delete(nomeTabela,colunas[0]+"= ?",identificador);
-    }catch(SQLException ex) {
-        Log.e("ERRO", "AlunoDao.delete(): " + ex.getMessage());
-    }
+            String[]identificador = {String.valueOf(obj.getRa())};
+            return bd.delete(nomeTabela, colunas[0]+" = ?",
+                    identificador);
+
+        }catch (SQLException ex){
+            Log.e("ERRO", "AlunoDao.delete(): "+ex.getMessage());
+        }
         return 0;
-}
+    }
+
     @Override
     public ArrayList<Aluno> getAll() {
         ArrayList<Aluno> lista = new ArrayList<>();
-        try {
-           Cursor cursor = bd.query(nomeTabela,colunas,null,null,null,null,colunas[0]);
-           if (cursor.moveToFirst()){
-               do{
-                   Aluno aluno = new Aluno();
-                   aluno.setRa(cursor.getInt(0));
-                   aluno.setNome(cursor.getString(1));
-                   lista.add(aluno);
+        try{
+            Cursor cursor = bd.query(nomeTabela, colunas,
+                    null, null, null,
+                    null, colunas[0]);
 
-               }while (cursor.moveToFirst());
-           }
+            //Verifica se é possível retornar o ponteiro para
+            // a primeira posição do cursor
+            if(cursor.moveToFirst()){
+                do{
+                    Aluno aluno = new Aluno();
+                    aluno.setRa(cursor.getInt(0));
+                    aluno.setNome(cursor.getString(1));
 
-        }catch(SQLException ex) {
-            Log.e("ERRO", "AlunoDao.getAll(): " + ex.getMessage());
+                    lista.add(aluno);
+
+                }while (cursor.moveToNext());
+            }
+        }catch (SQLException ex){
+            Log.e("ERRO", "AlunoDao.getAll(): "+ex.getMessage());
         }
-        return null;
+        return lista;
     }
 
     @Override
     public Aluno getById(int id) {
-        try {
+        try{
             String[]identificador = {String.valueOf(id)};
-            Cursor cursor = bd.query(nomeTabela, colunas,colunas[0]+" = ?",identificador,null,null,null);
-            //verifica se é possivel retornar o ponteiro para a primeira posição do cursor
-            if (cursor.moveToFirst()){
+            Cursor cursor = bd.query(nomeTabela, colunas,
+                    colunas[0]+" = "+id, null,
+                    null, null, null);
+
+            //Verifica se é possível retornar o ponteiro para
+            // a primeira posição do cursor
+            if(cursor.moveToFirst()){
                 Aluno aluno = new Aluno();
                 aluno.setRa(cursor.getInt(0));
                 aluno.setNome(cursor.getString(1));
+
                 return aluno;
             }
-        }catch(SQLException ex) {
-            Log.e("ERRO", "AlunoDao.getAll(): " + ex.getMessage());
+
+        }catch (SQLException ex){
+            Log.e("ERRO", "AlunoDao.getById(): "+ex.getMessage());
         }
+
         return null;
     }
 }

@@ -4,15 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MainActivity">
+    tools:context=".view.MainActivity"
+    tools:layout_editor_absoluteX="-12dp"
+    tools:layout_editor_absoluteY="0dp">
 
-    <TextView
+    <Button
+        android:id="@+id/btAluno"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Cadastro Aluno"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:onClick="abrirCadastroAluno"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
